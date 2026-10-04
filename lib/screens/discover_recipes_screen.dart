@@ -25,15 +25,18 @@ class _DiscoverRecipesScreenState extends State<DiscoverRecipesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    Color cardBg = isDark ? Colors.grey[900]! : Colors.white;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Discover Desserts', 
-          style: TextStyle(color: Color(0xFF43302E), fontWeight: FontWeight.bold)
+          style: TextStyle(color: isDark ? Colors.white : const Color(0xFF43302E), fontWeight: FontWeight.bold)
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF43302E)),
+        iconTheme: IconThemeData(color: isDark ? Colors.white : const Color(0xFF43302E)),
       ),
       // FutureBuilder is perfect for waiting for the internet! 
       // It handles showing a loading spinner automatically.
@@ -110,7 +113,7 @@ class _DiscoverRecipesScreenState extends State<DiscoverRecipesScreen> {
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white, 
+                      color: cardBg, 
                       borderRadius: BorderRadius.circular(16)
                     ),
                     child: Row(
@@ -137,14 +140,14 @@ class _DiscoverRecipesScreenState extends State<DiscoverRecipesScreen> {
                             children: [
                               Text(
                                 recipe.title, 
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : Colors.black),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 recipe.category, 
-                                style: const TextStyle(color: Color(0xFF43302E), fontSize: 12)
+                                style: TextStyle(color: isDark ? Colors.grey[400] : const Color(0xFF43302E), fontSize: 12)
                               ),
                               const SizedBox(height: 4),
                               const Row(

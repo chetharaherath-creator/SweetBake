@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,6 +27,9 @@ class SweetBakeApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFFFFF9DB),
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle.dark, // Forces status bar icons to be black
+        ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFF0F5F9),
           primary: const Color(0xFFF0F5F9),
@@ -33,6 +37,9 @@ class SweetBakeApp extends StatelessWidget {
       ),
       // System Dark Theme configuration
       darkTheme: ThemeData.dark().copyWith(
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle.light, // Forces status bar icons to be white
+        ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFF0F5F9),
           brightness: Brightness.dark,

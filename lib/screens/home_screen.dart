@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Builder(
           builder: (context) {
             bool isDark = Theme.of(context).brightness == Brightness.dark;
+            bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
             Color primaryText = isDark ? Colors.white : const Color(0xFF43302E);
             Color containerBg = isDark ? Colors.grey[850]! : const Color(0xFFF0F5F9);
             Color cardBg = isDark ? Colors.grey[900]! : Colors.white;
@@ -52,9 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: containerBg, borderRadius: BorderRadius.circular(20)),
+            
+            // Landscape Distinct Layout: Hide the big banner to save space!
+            if (!isLandscape)
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(color: containerBg, borderRadius: BorderRadius.circular(20)),
               child: Row(
                 children: [
                   Expanded(
@@ -140,13 +144,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   final timeA = dataA['createdAt'] as Timestamp?;
                   final timeB = dataB['createdAt'] as Timestamp?;
                   
+                  // If a recipe doesn't have a timestamp, put it at the bottom
+                  if (timeA == null && timeB == null) return 0;
                   if (timeA == null) return 1;
                   if (timeB == null) return -1;
                   
-                  return timeB.compareTo(timeA);
+                  
+                  return timeB!.compareTo(timeA!);
                 });
-
-                bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
 
                 return GridView.builder(
                   shrinkWrap: true,

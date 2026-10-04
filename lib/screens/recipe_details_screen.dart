@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'edit_recipe_screen.dart';
+import 'main_navigation.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
   final String id;
@@ -25,26 +26,41 @@ class RecipeDetailsScreen extends StatefulWidget {
 }
 
 class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
-  bool isFavorite = false;
 
   void deleteRecipe() {
+    bool isDeleting = false; // Add safety lock to prevent double-tapping
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text("Delete Recipe?"),
         content: const Text("Are you sure you want to delete this recipe? This cannot be undone."),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), 
+            onPressed: () => Navigator.pop(dialogContext), 
             child: const Text("Cancel", style: TextStyle(color: Colors.grey))
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context); // Close dialog
+              if (isDeleting) return; // If already running, ignore the extra click!
+              isDeleting = true;
+
+              Navigator.pop(dialogContext); // Close dialog safely using dialogContext
               try {
+                // 1. Delete the recipe from the database
                 await FirebaseFirestore.instance.collection('recipes').doc(widget.id).delete();
+                
+                // 2. Show the success message
                 Fluttertoast.showToast(msg: "Recipe deleted", backgroundColor: const Color(0xFF43302E), textColor: const Color(0xFFFFF1B5), webBgColor: "#43302E");
-                if (mounted) Navigator.pop(context); // Close details screen
+                
+                // 3. Immediately send the user back to the Home Screen using the SCREEN's context
+                if (mounted) {
+                  Navigator.pushAndRemoveUntil(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const MainNavigation()), 
+                    (route) => false
+                  );
+                }
               } catch (e) {
                 Fluttertoast.showToast(msg: "Failed to delete", backgroundColor: const Color(0xFF43302E), textColor: const Color(0xFFFFF1B5), webBgColor: "#43302E");
               }
@@ -101,17 +117,6 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
               icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
               onPressed: deleteRecipe,
             ),
-          IconButton(
-            icon: Icon(
-              isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: isFavorite ? const Color(0xFF43302E) : Colors.grey,
-            ),
-            onPressed: () {
-              setState(() {
-                isFavorite = !isFavorite;
-              });
-            },
-          ),
         ],
       ),
       body: ListView(

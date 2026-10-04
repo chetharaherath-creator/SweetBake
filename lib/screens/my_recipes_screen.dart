@@ -45,6 +45,8 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
   @override
   Widget build(BuildContext context) {
     String? currentUid = FirebaseAuth.instance.currentUser?.uid;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    Color cardBg = isDark ? Colors.grey[900]! : Colors.white;
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +55,7 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_circle, color: Color(0xFF43302E), size: 28),
+            icon: Icon(Icons.add_circle, color: isDark ? Colors.white : const Color(0xFF43302E), size: 28),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const AddRecipeScreen()));
             },
@@ -86,12 +88,13 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
                     final timeA = dataA['createdAt'] as Timestamp?;
                     final timeB = dataB['createdAt'] as Timestamp?;
                     
-                    // If a recipe is old and doesn't have a time, put it at the bottom
+                    // If a recipe doesn't have a timestamp, put it at the bottom
+                    if (timeA == null && timeB == null) return 0;
                     if (timeA == null) return 1; 
                     if (timeB == null) return -1;
                     
                     // Compare times to put newest on top
-                    return timeB.compareTo(timeA); 
+                    return timeB!.compareTo(timeA!); 
                   });
 
                   return ListView.builder(
@@ -124,7 +127,7 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
                           margin: const EdgeInsets.only(bottom: 12.0),
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardBg,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
                           ),
@@ -139,7 +142,7 @@ class _MyRecipesScreenState extends State<MyRecipesScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                    Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : Colors.black)),
                                     const SizedBox(height: 4),
                                     Row(
                                       children: [
