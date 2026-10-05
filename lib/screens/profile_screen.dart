@@ -19,12 +19,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isUploading = false;
 
   // Real Firebase Logout
-  void logout() async {
-    await FirebaseAuth.instance.signOut();
-    Fluttertoast.showToast(msg: "Logged out successfully", backgroundColor: const Color(0xFF43302E), textColor: const Color(0xFFFFF1B5), webBgColor: "#43302E");
-    if (mounted) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
-    }
+  void logout() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Log Out?"),
+        content: const Text("Are you sure you want to log out of your account?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text("Cancel", style: TextStyle(color: Colors.grey))
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Close dialog
+              await FirebaseAuth.instance.signOut();
+              Fluttertoast.showToast(msg: "Logged out successfully", backgroundColor: const Color(0xFF43302E), textColor: const Color(0xFFFFF1B5), webBgColor: "#43302E");
+              if (mounted) {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+              }
+            },
+            child: const Text("Log Out", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 
   // Upload Profile Picture
